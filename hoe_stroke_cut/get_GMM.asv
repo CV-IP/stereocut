@@ -1,0 +1,39 @@
+function [FCClusters, FCovs , FWeights  ,BCClusters , BCovs , BWeights] = ...
+         get_GMM( FColors, NumFClusters ,BColors, NumBClusters )
+
+%%%%%%%%%%% Using Just kmeans %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[FId FCClusters] = kmeans(FColors, NumFClusters);
+Fdim = size(FColors,2);
+%聚类，得到5个聚类中心 FCClusters; Fdim--前景sp的个数
+
+FCClusters = zeros(Fdim, NumFClusters);
+FWeights = zeros(1,NumFClusters);
+FCovs = zeros(Fdim, Fdim, NumFClusters);
+for k=1:NumFClusters
+    relColors = FColors(find(FId==k),:);        %% Colors belonging to cluster k
+    FCClusters(:,k) = mean(relColors,1)';
+    FCovs(:,:,k) = cov(relColors);     %得到每个聚类的协方差（因为有3个通道，所以得到的不仅仅是方差）
+    FWeights(1,k) = length(find(FId==k)) / length(FId);  %GMM中，每个分量的权值
+end
+%这一步，得到的是，每个通道（lab）的均值和方差
+%因为分成了5个聚类，每个通道都有它相应的每个聚类的均值，放在FCClusters里头 3*5
+%每个聚类都能够得到一个协方差矩阵，放在Fcovs里头
+%每个聚类就是GMM中的一个分量，分量的权值放在FWeights里头
+
+%  %  背景sp也是同样的操作
+[BId BCClusters] = kmeans(BColors, NumBClusters);
+Bdim = size(BColors,2);
+
+BCClusters = zeros(Bdim, NumBClusters);
+BWeights = zeros(1,NumBClusters);
+BCovs = zeros(Bdim, Bdim, NumBClusters);
+for k=1:NumBClusters
+    relColors = BColors(find(BId==k),:);        %% Colors belonging to cluster k
+    BCClusters(:,k) = mean(relColors,1)';
+    BCovs(:,:,k) = cov(relColors);
+    BWeights(1,k) = length(find(BId==k)) / length(BId);
+end
+
+% 也就说，要利用GMM，过程为： 1，聚类，确定每个聚类有哪些元素
+%                           2，每个聚类计算均值和方差（协方差）
+%                           3，计算每个聚类代表的分量的权值
