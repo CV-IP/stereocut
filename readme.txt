@@ -8,5 +8,5 @@ Please run the demo code:
 **************************************************************************************** 
 Please cite our paper when you publish new relevant papers. Thanks. ********************
 J. Peng, J. Shen*, and X. Li, High-order energies for stereo segmentation, *************
-IEEE Trans. on Cybernetics, in press, doi://10.1109/TCYB.2015.2453092, 2016 ************ 
+IEEE Trans. on Cybernetics, 46(7): 1616-1627, 2016 ************ 
 ****************************************************************************************
